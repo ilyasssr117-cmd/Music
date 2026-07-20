@@ -14,8 +14,8 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		AAAAAAAA000000000000A002 /* Gobackend.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA000000000000A001 /* Gobackend.xcframework */; };
-		AAAAAAAA000000000000A003 /* Gobackend.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA000000000000A001 /* Gobackend.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		55B105275B00E8C6D3D5E816 /* Gobackend.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2871E4D3F17CF4045003453 /* Gobackend.xcframework */; };
+		D9F06BD31BB8AA1A5EB9993E /* Gobackend.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2871E4D3F17CF4045003453 /* Gobackend.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,7 +35,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				AAAAAAAA000000000000A003 /* Gobackend.xcframework in Embed Frameworks */,
+				D9F06BD31BB8AA1A5EB9993E /* Gobackend.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -58,7 +58,7 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AAAAAAAA000000000000A001 /* Gobackend.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gobackend.xcframework; path = Frameworks/Gobackend.xcframework; sourceTree = "<group>"; };
+		B2871E4D3F17CF4045003453 /* Gobackend.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gobackend.xcframework; path = Frameworks/Gobackend.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AAAAAAAA000000000000A002 /* Gobackend.xcframework in Frameworks */,
+				55B105275B00E8C6D3D5E816 /* Gobackend.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,7 +97,7 @@
 			children = (
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
-				AAAAAAAA000000000000A004 /* Frameworks */,
+				4E1430228671C64AB80322E2 /* Frameworks */,
 				97C146EF1CF9000F007C117D /* Products */,
 				331C8082294A63A400263BE5 /* RunnerTests */,
 			);
@@ -127,10 +127,10 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
-		AAAAAAAA000000000000A004 /* Frameworks */ = {
+		4E1430228671C64AB80322E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AAAAAAAA000000000000A001 /* Gobackend.xcframework */,
+				B2871E4D3F17CF4045003453 /* Gobackend.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
