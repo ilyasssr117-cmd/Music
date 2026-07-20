@@ -1695,6 +1695,13 @@ class _ArtistScreenState extends ConsumerState<ArtistScreen> {
       return;
     }
 
+    final streamed = await ref
+        .read(playbackProvider.notifier)
+        .streamTrack(track);
+    if (streamed) {
+      return;
+    }
+
     _downloadTrack(track);
   }
 
