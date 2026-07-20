@@ -1359,6 +1359,13 @@ class _AlbumTrackItem extends ConsumerWidget {
       return;
     }
 
+    final streamed = await ref
+        .read(playbackProvider.notifier)
+        .streamTrack(track);
+    if (streamed) {
+      return;
+    }
+
     onDownload();
   }
 

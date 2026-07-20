@@ -152,24 +152,12 @@ class PlaybackController extends Notifier<PlaybackState> {
       for (var index = 0; index < orderedTracks.length; index++) {
         final track = orderedTracks[index];
         final resolvedPath = resolvedPaths[index];
-        if (resolvedPath == null) continue;
-        if (isCueVirtualPath(resolvedPath)) {
-          skippedCueVirtualTrack = true;
-          continue;
-        }
-        queue.add(
-          PlayableMedia(
-            id: resolvedPath,
-            source: resolvedPath,
-            title: track.name,
-            artist: track.artistName,
-            album: track.albumName,
-            artUri: _normalizeArtUri(track.coverUrl ?? ''),
-            duration: track.duration > 0
-                ? Duration(seconds: track.duration)
-                : null,
-          ),
+        final media = _playableForTrack(
+          track,
+          resolvedPath,
+          onSkipCueVirtual: () => skippedCueVirtualTrack = true,
         );
+        if (media != null) queue.add(media);
       }
 
       if (queue.isNotEmpty) {
@@ -181,7 +169,7 @@ class PlaybackController extends Notifier<PlaybackState> {
         throw Exception(cueVirtualTrackRequiresSplitMessage);
       }
       throw Exception(
-        'No local audio file is available to play. Download the track first.',
+        'No playable source is available for these tracks.',
       );
     }
 
@@ -208,10 +196,93 @@ class PlaybackController extends Notifier<PlaybackState> {
       throw Exception(cueVirtualTrackRequiresSplitMessage);
     }
 
+    // Nothing is downloaded locally: stream online immediately instead of
+    // forcing the user to download first.
+    if (await streamTrackList(orderedTracks)) {
+      return;
+    }
+
     throw Exception(
-      'No local audio file is available to open. Download the track first.',
+      'No playable source is available for these tracks.',
     );
   }
+
+  /// Builds a [PlayableMedia] for [track], preferring a locally available file
+  /// ([resolvedPath]) and otherwise falling back to the track's online
+  /// stream/preview URL so it can be streamed without a prior download.
+  PlayableMedia? _playableForTrack(
+    Track track,
+    String? resolvedPath, {
+    void Function()? onSkipCueVirtual,
+  }) {
+    if (resolvedPath != null) {
+      if (isCueVirtualPath(resolvedPath)) {
+        onSkipCueVirtual?.call();
+        return null;
+      }
+      return PlayableMedia(
+        id: resolvedPath,
+        source: resolvedPath,
+        title: track.name,
+        artist: track.artistName,
+        album: track.albumName,
+        artUri: _normalizeArtUri(track.coverUrl ?? ''),
+        duration: track.duration > 0 ? Duration(seconds: track.duration) : null,
+      );
+    }
+
+    final streamUrl = _streamUrlForTrack(track);
+    if (streamUrl == null) return null;
+    return PlayableMedia(
+      id: track.id.trim().isNotEmpty ? track.id : streamUrl,
+      source: streamUrl,
+      title: track.name,
+      artist: track.artistName,
+      album: track.albumName,
+      artUri: _normalizeArtUri(track.coverUrl ?? ''),
+    );
+  }
+
+  /// Returns an online audio URL for [track] that can be streamed directly, or
+  /// null when none is available.
+  String? _streamUrlForTrack(Track track) {
+    final preview = track.previewUrl?.trim() ?? '';
+    if (preview.startsWith('http://') || preview.startsWith('https://')) {
+      return preview;
+    }
+    final source = track.source?.trim() ?? '';
+    if (source.startsWith('http://') || source.startsWith('https://')) {
+      return source;
+    }
+    return null;
+  }
+
+  /// Streams [tracks] online through the built-in player (which drives the
+  /// MiniPlayer and now-playing screen), preferring any locally available file
+  /// per track. Returns whether playback started.
+  Future<bool> streamTrackList(List<Track> tracks, {int startIndex = 0}) async {
+    if (tracks.isEmpty) return false;
+
+    final controller = ref.read(musicPlayerControllerProvider);
+    if (await controller.ensureInitialized() == null) return false;
+
+    final orderedTracks = _orderedTracksFromStartIndex(tracks, startIndex);
+    final resolvedPaths = await _resolveTrackPaths(orderedTracks);
+    final queue = <PlayableMedia>[];
+    for (var index = 0; index < orderedTracks.length; index++) {
+      final media = _playableForTrack(orderedTracks[index], resolvedPaths[index]);
+      if (media != null) queue.add(media);
+    }
+    if (queue.isEmpty) return false;
+
+    _log.d('Streaming ${queue.length} tracks in the internal player');
+    await controller.playAll(queue);
+    return true;
+  }
+
+  /// Streams a single [track] online immediately, using a locally available
+  /// file when present. Returns whether playback started.
+  Future<bool> streamTrack(Track track) => streamTrackList([track]);
 
   List<Track> _orderedTracksFromStartIndex(List<Track> tracks, int startIndex) {
     final safeStart = startIndex.clamp(0, tracks.length - 1);
