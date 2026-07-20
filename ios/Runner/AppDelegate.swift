@@ -1,6 +1,6 @@
 import Flutter
 import UIKit
-import Gobackend
+
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
