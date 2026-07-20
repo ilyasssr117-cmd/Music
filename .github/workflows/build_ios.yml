@@ -60,6 +60,18 @@ jobs:
       - name: Generate launcher icons
         run: dart run flutter_launcher_icons
 
+      # The published ffmpeg_kit_flutter_new_full package ships its
+      # scripts/*.sh with CRLF line endings; its podspec prepare_command runs
+      # setup_ios.sh during `pod install`, which fails with
+      # "/bin/bash^M: bad interpreter". Normalize line endings first.
+      - name: Normalize ffmpeg_kit_flutter script line endings
+        run: |
+          set -euxo pipefail
+          while IFS= read -r script; do
+            perl -i -pe 's/\r$//' "$script"
+            chmod +x "$script"
+          done < <(find "$HOME/.pub-cache" -path '*ffmpeg_kit_flutter*/scripts/*.sh')
+
       - name: Install CocoaPods dependencies
         run: |
           set -euxo pipefail
