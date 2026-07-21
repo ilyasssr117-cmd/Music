@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 
 /// Background fill for grouped cards, matching the Settings group look. Blends a
@@ -6,15 +8,17 @@ import 'package:flutter/material.dart';
 Color settingsGroupColor(BuildContext context) {
   final colorScheme = Theme.of(context).colorScheme;
   final isDark = Theme.of(context).brightness == Brightness.dark;
-  return isDark
+  final base = colorScheme.surface;
+  final tint = isDark
       ? Color.alphaBlend(
-          Colors.white.withValues(alpha: 0.08),
-          colorScheme.surface,
+          colorScheme.primary.withValues(alpha: 0.08),
+          Colors.white.withValues(alpha: 0.06),
         )
       : Color.alphaBlend(
-          Colors.black.withValues(alpha: 0.04),
-          colorScheme.surface,
+          colorScheme.primary.withValues(alpha: 0.05),
+          Colors.black.withValues(alpha: 0.03),
         );
+  return Color.alphaBlend(tint, base);
 }
 
 class SettingsGroup extends StatelessWidget {
@@ -29,18 +33,36 @@ class SettingsGroup extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      margin: margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      margin: margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 26,
+            spreadRadius: -14,
+            offset: const Offset(0, 14),
+            color: Colors.black.withValues(alpha: 0.22),
+          ),
+        ],
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Material(
-        color: Colors.transparent,
-        child: Column(mainAxisSize: MainAxisSize.min, children: children),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: cardColor.withValues(alpha: 0.72),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.28),
+              ),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: Column(mainAxisSize: MainAxisSize.min, children: children),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -38,7 +38,6 @@ import 'package:spotiflac_android/widgets/batch_progress_dialog.dart';
 import 'package:spotiflac_android/widgets/batch_convert_sheet.dart';
 import 'package:spotiflac_android/widgets/cached_cover_image.dart';
 import 'package:spotiflac_android/widgets/audio_quality_badges.dart';
-import 'package:spotiflac_android/widgets/track_collection_quick_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:spotiflac_android/services/cover_cache_manager.dart';
 import 'package:spotiflac_android/screens/library_tracks_folder_screen.dart';
@@ -162,7 +161,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
   double _playlistSelectionOverlayBottomPadding = 0;
 
   PageController? _filterPageController;
-  final List<String> _filterModes = ['all', 'playlists', 'albums', 'singles'];
+  final List<String> _filterModes = ['all', 'albums', 'singles'];
   bool _isPageControllerInitialized = false;
   static const List<String> _months = [
     'Jan',
@@ -285,7 +284,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
     if (_isPageControllerInitialized) return;
     _isPageControllerInitialized = true;
     final currentFilter = ref.read(settingsProvider).historyFilterMode;
-    final initialPage = _filterModes.indexOf(currentFilter).clamp(0, 3);
+    final initialPage = _filterModes.indexOf(currentFilter).clamp(0, 2);
     _filterPageController = PageController(initialPage: initialPage);
   }
 
@@ -2879,20 +2878,14 @@ class _QueueTabState extends ConsumerState<QueueTab> {
           localLibraryEnabled: localLibraryEnabled,
         );
 
-    final activePageRequest = historyFilterMode == 'playlists'
-        ? null
-        : pageRequest(historyFilterMode);
-    final AsyncValue<_QueueLibraryPageData>? activePageValue =
-        activePageRequest == null
-            ? null
-            : ref.watch(_queueLibraryPageProvider(activePageRequest));
+    final activePageRequest = pageRequest(historyFilterMode);
+    final activePageValue = ref.watch(
+      _queueLibraryPageProvider(activePageRequest),
+    );
 
     _QueueLibraryPageData pageData(String filterMode) {
-      if (filterMode == 'playlists') {
-        return const _QueueLibraryPageData();
-      }
       final request = filterMode == historyFilterMode
-          ? activePageRequest!
+          ? activePageRequest
           : pageRequest(filterMode);
       return _resolveQueueLibraryPageData(
         filterMode == historyFilterMode ? activePageValue : null,
@@ -2901,19 +2894,6 @@ class _QueueTabState extends ConsumerState<QueueTab> {
     }
 
     _FilterContentData getFilterData(String filterMode) {
-      if (filterMode == 'playlists') {
-        return const _FilterContentData(
-          historyItems: [],
-          unifiedItems: [],
-          filteredUnifiedItems: [],
-          filteredGroupedAlbums: [],
-          filteredGroupedLocalAlbums: [],
-          showFilteringIndicator: false,
-          totalTrackCountOverride: 0,
-          totalAlbumCountOverride: 0,
-        );
-      }
-
       return pageData(filterMode).toFilterContentData(
         collectionState,
         totalTrackCount: switch (filterMode) {
@@ -2926,28 +2906,23 @@ class _QueueTabState extends ConsumerState<QueueTab> {
     }
 
     final currentPageData = pageData(historyFilterMode);
-    final currentLoadedCount = historyFilterMode == 'playlists'
-        ? collectionState.playlistCount
-        : historyFilterMode == 'albums'
+    final currentLoadedCount = historyFilterMode == 'albums'
         ? currentPageData.groupedAlbums.length +
               currentPageData.groupedLocalAlbums.length
         : currentPageData.items.length;
     final currentTotalCount = switch (historyFilterMode) {
       'albums' => queueCounts.albumCount,
       'singles' => queueCounts.singleTrackCount,
-      'playlists' => collectionState.playlistCount,
       _ => queueCounts.allTrackCount,
     };
-    final hasMoreLibrary =
-        historyFilterMode == 'playlists' ? false : currentLoadedCount < currentTotalCount;
+    final hasMoreLibrary = currentLoadedCount < currentTotalCount;
     final isLibraryPageLoading =
-        countsValue.isLoading || (activePageValue?.isLoading ?? false);
-    final hasAnyLibraryItems = queueCounts.allTrackCount > 0 ||
-        queueCounts.albumCount > 0 ||
-        collectionState.playlistCount > 0;
-    final hasLibraryContent = historyTotalCount > 0 ||
-        (localLibraryEnabled && localLibraryTotalCount > 0) ||
-        collectionState.playlistCount > 0;
+        countsValue.isLoading || activePageValue.isLoading;
+    final hasAnyLibraryItems =
+        queueCounts.allTrackCount > 0 || queueCounts.albumCount > 0;
+    final hasLibraryContent =
+        historyTotalCount > 0 ||
+        (localLibraryEnabled && localLibraryTotalCount > 0);
     final hasActiveSearch =
         _searchQuery.isNotEmpty || _searchController.text.trim().isNotEmpty;
     final shouldShowLibraryControls =
@@ -3126,20 +3101,11 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                                 ),
                                 const SizedBox(width: 8),
                                 _FilterChip(
-                                  label: context.l10n.collectionPlaylists,
-                                  count: collectionState.playlistCount,
-                                  isSelected: historyFilterMode == 'playlists',
-                                  onTap: () {
-                                    _animateToFilterPage(1);
-                                  },
-                                ),
-                                const SizedBox(width: 8),
-                                _FilterChip(
                                   label: context.l10n.historyFilterAlbums,
                                   count: filteredAlbumCount,
                                   isSelected: historyFilterMode == 'albums',
                                   onTap: () {
-                                    _animateToFilterPage(2);
+                                    _animateToFilterPage(1);
                                   },
                                 ),
                                 const SizedBox(width: 8),
@@ -3148,7 +3114,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                                   count: filteredSingleCount,
                                   isSelected: historyFilterMode == 'singles',
                                   onTap: () {
-                                    _animateToFilterPage(3);
+                                    _animateToFilterPage(2);
                                   },
                                 ),
                               ],
@@ -3166,15 +3132,6 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                 itemCount: _filterModes.length,
                 itemBuilder: (context, index) {
                   final filterMode = _filterModes[index];
-                  if (filterMode == 'playlists') {
-                    return _buildPlaylistsContent(
-                      context: context,
-                      colorScheme: colorScheme,
-                      historyViewMode: historyViewMode,
-                      collectionState: collectionState,
-                      bottomInset: bottomInset,
-                    );
-                  }
                   final filterData = getFilterData(filterMode);
                   return _buildFilterContent(
                     context: context,
@@ -4155,122 +4112,6 @@ class _QueueTabState extends ConsumerState<QueueTab> {
           },
         );
     }
-  }
-
-  Widget _buildPlaylistsContent({
-    required BuildContext context,
-    required ColorScheme colorScheme,
-    required String historyViewMode,
-    required LibraryCollectionsState collectionState,
-    double bottomInset = 0,
-  }) {
-    final playlists = collectionState.playlists;
-
-    Widget buildPlaylistItem(UserPlaylistCollection playlist) {
-      return _buildCollectionListItem(
-        context: context,
-        colorScheme: colorScheme,
-        coverWidget: _buildPlaylistCover(context, playlist, colorScheme, 56),
-        title: playlist.name,
-        subtitle:
-            '${playlist.tracks.length} ${playlist.tracks.length == 1 ? 'track' : 'tracks'}',
-        onTap: () => _openPlaylistById(playlist.id),
-        onLongPress: () => _enterPlaylistSelectionMode(playlist.id),
-      );
-    }
-
-    Widget buildPlaylistGridItem(UserPlaylistCollection playlist) {
-      return _buildCollectionGridItem(
-        context: context,
-        colorScheme: colorScheme,
-        coverWidget: _buildPlaylistCover(context, playlist, colorScheme, 132),
-        title: playlist.name,
-        count: playlist.tracks.length,
-        onTap: () => _openPlaylistById(playlist.id),
-        onLongPress: () => _enterPlaylistSelectionMode(playlist.id),
-      );
-    }
-
-    final content = playlists.isEmpty
-        ? SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.queue_music, size: 64, color: colorScheme.onSurfaceVariant),
-                  const SizedBox(height: 16),
-                  Text(
-                    context.l10n.collectionNoPlaylistsYet,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    context.l10n.collectionNoPlaylistsSubtitle,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        : historyViewMode == 'grid'
-            ? SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                sliver: SliverGrid(
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: _libraryAlbumGridExtent,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                    childAspectRatio: 0.82,
-                  ),
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final playlist = playlists[index];
-                    return buildPlaylistGridItem(playlist);
-                  }, childCount: playlists.length),
-                ),
-              )
-            : SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final playlist = playlists[index];
-                  return buildPlaylistItem(playlist);
-                }, childCount: playlists.length),
-              );
-
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Row(
-              children: [
-                Text(
-                  context.l10n.collectionPlaylists,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const Spacer(),
-                TextButton.icon(
-                  onPressed: () => _showCreatePlaylistDialog(context),
-                  icon: const Icon(Icons.add, size: 20),
-                  label: Text(context.l10n.collectionCreatePlaylist),
-                  style: TextButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        content,
-        SliverToBoxAdapter(child: SizedBox(height: bottomInset)),
-      ],
-    );
   }
 
   Widget _buildFilterContent({
@@ -7177,11 +7018,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                 ),
           onLongPress: _isSelectionMode
               ? null
-              : () => TrackCollectionQuickActions.showTrackOptionsSheet(
-                  context,
-                  ref,
-                  item.toTrack(),
-                ),
+              : () => _enterSelectionMode(item.id),
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -7375,13 +7212,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
               album: item.albumName,
               coverUrl: item.coverUrl ?? item.localCoverPath ?? '',
             ),
-      onLongPress: _isSelectionMode
-          ? null
-          : () => TrackCollectionQuickActions.showTrackOptionsSheet(
-              context,
-              ref,
-              item.toTrack(),
-            ),
+      onLongPress: _isSelectionMode ? null : () => _enterSelectionMode(item.id),
       child: Stack(
         children: [
           Column(

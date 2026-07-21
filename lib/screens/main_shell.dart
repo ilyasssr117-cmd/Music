@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui' show ImageFilter;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +25,7 @@ import 'package:spotiflac_android/services/update_checker.dart';
 import 'package:spotiflac_android/widgets/app_announcement_dialog.dart';
 import 'package:spotiflac_android/widgets/update_dialog.dart';
 import 'package:spotiflac_android/widgets/animation_utils.dart';
+import 'package:spotiflac_android/widgets/glass_surface.dart';
 import 'package:spotiflac_android/widgets/settings_group.dart';
 import 'package:spotiflac_android/widgets/mini_player.dart';
 import 'package:spotiflac_android/utils/logger.dart';
@@ -582,59 +582,73 @@ class _MainShellState extends ConsumerState<MainShell>
       },
       child: Scaffold(
         extendBody: true,
-        body: AnimatedBuilder(
-          animation: _tabJumpTransitionController,
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: tabs.length,
-            onPageChanged: _onPageChanged,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => _KeepAliveTabPage(
-              key: ValueKey('page-$index'),
-              child: tabs[index],
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            const _ShellBackdrop(),
+            AnimatedBuilder(
+              animation: _tabJumpTransitionController,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: tabs.length,
+                onPageChanged: _onPageChanged,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => _KeepAliveTabPage(
+                  key: ValueKey('page-$index'),
+                  child: tabs[index],
+                ),
+              ),
+              builder: (context, child) {
+                final t = Curves.easeOutCubic.transform(
+                  _tabJumpTransitionController.value,
+                );
+                return Opacity(
+                  opacity: t,
+                  child: Transform.scale(scale: 0.985 + (0.015 * t), child: child),
+                );
+              },
             ),
-          ),
-          builder: (context, child) {
-            final t = Curves.easeOutCubic.transform(
-              _tabJumpTransitionController.value,
-            );
-            return Opacity(
-              opacity: t,
-              child: Transform.scale(scale: 0.985 + (0.015 * t), child: child),
-            );
-          },
+          ],
         ),
-        bottomNavigationBar: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const MiniPlayer(),
-                DecoratedBox(
-                  position: DecorationPosition.foreground,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.outlineVariant.withValues(alpha: 0.5),
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+            child: GlassSurface(
+              borderRadius: BorderRadius.circular(30),
+              blurSigma: 30,
+              tint: settingsGroupColor(context),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const MiniPlayer(),
+                  DecoratedBox(
+                    position: DecorationPosition.foreground,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.outlineVariant.withValues(alpha: 0.22),
+                        ),
                       ),
                     ),
+                    child: NavigationBar(
+                      selectedIndex: _currentIndex.clamp(0, maxIndex),
+                      onDestinationSelected: _onNavTap,
+                      animationDuration: const Duration(milliseconds: 500),
+                      elevation: 0,
+                      height: 64,
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      indicatorColor: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.18),
+                      destinations: destinations,
+                    ),
                   ),
-                  child: NavigationBar(
-                    selectedIndex: _currentIndex.clamp(0, maxIndex),
-                    onDestinationSelected: _onNavTap,
-                    animationDuration: const Duration(milliseconds: 500),
-                    elevation: 0,
-                    height: 64,
-                    backgroundColor: settingsGroupColor(
-                      context,
-                    ).withValues(alpha: 0.72),
-                    destinations: destinations,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -684,6 +698,87 @@ class _PreviewStopNavigatorObserver extends NavigatorObserver {
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPop(route, previousRoute);
     _onNavigate();
+  }
+}
+
+class _ShellBackdrop extends StatelessWidget {
+  const _ShellBackdrop();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return IgnorePointer(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              scheme.surface,
+              Color.alphaBlend(
+                scheme.primary.withValues(alpha: 0.14),
+                scheme.surface,
+              ),
+              Color.alphaBlend(
+                Colors.black.withValues(alpha: 0.06),
+                scheme.surface,
+              ),
+            ],
+          ),
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -120,
+              left: -70,
+              child: _GlowOrb(color: scheme.primary.withValues(alpha: 0.24), size: 240),
+            ),
+            Positioned(
+              top: 140,
+              right: -100,
+              child: _GlowOrb(color: scheme.secondary.withValues(alpha: 0.18), size: 260),
+            ),
+            Positioned(
+              bottom: 120,
+              left: -80,
+              child: _GlowOrb(color: scheme.tertiary.withValues(alpha: 0.14), size: 220),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GlowOrb extends StatelessWidget {
+  final Color color;
+  final double size;
+
+  const _GlowOrb({required this.color, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            color,
+            color.withValues(alpha: 0.02),
+          ],
+          stops: const [0.0, 1.0],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color,
+            blurRadius: 80,
+            spreadRadius: 12,
+          ),
+        ],
+      ),
+    );
   }
 }
 
