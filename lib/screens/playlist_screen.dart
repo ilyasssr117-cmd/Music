@@ -1103,12 +1103,21 @@ class _PlaylistTrackItem extends ConsumerWidget {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              PreviewButton(track: track),
               IconButton(
-                icon: const Icon(Icons.download_rounded),
                 tooltip: context.l10n.dialogDownload,
-                onPressed: () => onDownload(),
+                icon: Icon(
+                  Icons.download_rounded,
+                  color: colorScheme.onSurfaceVariant,
+                  size: 20,
+                ),
+                onPressed: onDownload,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(
+                  minWidth: 36,
+                  minHeight: 36,
+                ),
               ),
+              PreviewButton(track: track),
               TrackCollectionQuickActions(track: track),
             ],
           ),
@@ -1128,8 +1137,7 @@ class _PlaylistTrackItem extends ConsumerWidget {
     WidgetRef ref, {
     required bool isQueued,
   }) async {
-    if (isQueued) return;
-    await playTrackOrPreview(context, ref, track);
+    await playTrackLikeSpotify(context, ref, track);
   }
 
   Future<bool> _playLocalIfAvailable(

@@ -253,7 +253,9 @@ class _SearchTrackTile extends ConsumerWidget {
           ),
         ],
       ),
-      onTap: () async => playTrackOrPreview(context, ref, track),
+      onTap: () async {
+        await playTrackLikeSpotify(context, ref, track);
+      },
     );
   }
 }

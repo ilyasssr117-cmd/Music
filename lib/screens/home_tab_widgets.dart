@@ -376,12 +376,21 @@ class _TrackItemWithStatus extends ConsumerWidget {
                     ],
                   ),
                 ),
-                PreviewButton(track: track),
                 IconButton(
-                  icon: const Icon(Icons.download_rounded),
                   tooltip: context.l10n.dialogDownload,
-                  onPressed: () => onDownload(),
+                  icon: Icon(
+                    Icons.download_rounded,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 20,
+                  ),
+                  onPressed: onDownload,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    minHeight: 36,
+                  ),
                 ),
+                PreviewButton(track: track),
                 TrackCollectionQuickActions(track: track),
               ],
             ),
@@ -406,8 +415,7 @@ class _TrackItemWithStatus extends ConsumerWidget {
     required bool isInHistory,
     required bool isInLocalLibrary,
   }) async {
-    if (isQueued) return;
-    await playTrackOrPreview(context, ref, track);
+    await playTrackLikeSpotify(context, ref, track);
   }
 }
 

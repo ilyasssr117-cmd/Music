@@ -25,9 +25,8 @@ import 'package:spotiflac_android/widgets/animation_utils.dart';
 import 'package:spotiflac_android/utils/clickable_metadata.dart';
 import 'package:spotiflac_android/widgets/cached_cover_image.dart';
 import 'package:spotiflac_android/widgets/motion_header_banner.dart';
-import 'package:spotiflac_android/widgets/cross_extension_share_sheet.dart';
-import 'package:spotiflac_android/widgets/preview_button.dart';
 import 'package:spotiflac_android/utils/track_playback_helper.dart';
+import 'package:spotiflac_android/widgets/cross_extension_share_sheet.dart';
 
 class _ArtistCache {
   static final Map<String, _CacheEntry> _cache = {};
@@ -1555,7 +1554,7 @@ class _ArtistScreenState extends ConsumerState<ArtistScreen> {
         final isQueued = queueItem != null;
 
         return InkWell(
-          onTap: () => _handlePopularTrackTap(context, ref, track, isQueued: isQueued),
+          onTap: () => _handlePopularTrackTap(track, isQueued: isQueued),
           onLongPress: () => TrackCollectionQuickActions.showTrackOptionsSheet(
             context,
             ref,
@@ -1680,31 +1679,31 @@ class _ArtistScreenState extends ConsumerState<ArtistScreen> {
                     ],
                   ),
                 ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PreviewButton(track: track),
-              IconButton(
-                icon: const Icon(Icons.download_rounded),
-                tooltip: context.l10n.dialogDownload,
-                onPressed: () => _downloadTrack(track),
-              ),
-              TrackCollectionQuickActions(track: track),
-            ],
+                IconButton(
+                  tooltip: context.l10n.dialogDownload,
+                  icon: Icon(
+                    Icons.download_rounded,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 20,
+                  ),
+                  onPressed: () => _downloadTrack(track),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    minHeight: 36,
+                  ),
+                ),
+                TrackCollectionQuickActions(track: track),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
-  void _handlePopularTrackTap(
-    BuildContext context,
-    WidgetRef ref,
-    Track track, {
-    required bool isQueued,
-  }) async {
-    if (isQueued) return;
-    await playTrackOrPreview(context, ref, track);
+  void _handlePopularTrackTap(Track track, {required bool isQueued}) async {
+    await playTrackLikeSpotify(context, ref, track);
   }
 
   Future<bool> _playLocalIfAvailable(Track track) async {
