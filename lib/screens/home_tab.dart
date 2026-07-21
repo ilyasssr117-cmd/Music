@@ -269,11 +269,11 @@ class _HomeTabState extends ConsumerState<HomeTab>
           .firstOrNull;
       final filters = currentSearchExtension?.searchBehavior?.filters;
       if (filters != null && filters.isNotEmpty) {
-        return filters;
+        return _ensurePlaylistFilterVisible(context, filters);
       }
     }
 
-    return [
+    return _ensurePlaylistFilterVisible(context, [
       SearchFilter(
         id: 'track',
         label: context.l10n.searchTracks,
@@ -289,6 +289,24 @@ class _HomeTabState extends ConsumerState<HomeTab>
         label: context.l10n.searchAlbums,
         icon: 'album',
       ),
+      SearchFilter(
+        id: 'playlist',
+        label: context.l10n.searchPlaylists,
+        icon: 'playlist',
+      ),
+    ]);
+  }
+
+  List<SearchFilter> _ensurePlaylistFilterVisible(
+    BuildContext context,
+    List<SearchFilter> filters,
+  ) {
+    if (filters.any((filter) => filter.id == 'playlist')) {
+      return filters;
+    }
+
+    return [
+      ...filters,
       SearchFilter(
         id: 'playlist',
         label: context.l10n.searchPlaylists,
