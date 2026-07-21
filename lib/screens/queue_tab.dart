@@ -3080,7 +3080,9 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                       child: Align(
                         alignment: AlignmentDirectional.centerEnd,
-                        child: FilledButton.tonalIcon(
+                        child: ActionChip(
+                          avatar: const Icon(Icons.playlist_play, size: 18),
+                          label: Text(context.l10n.collectionPlaylists),
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute<void>(
@@ -3088,8 +3090,22 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                               ),
                             );
                           },
-                          icon: const Icon(Icons.playlist_play),
-                          label: Text(context.l10n.collectionPlaylists),
+                          showCheckmark: false,
+                          backgroundColor: settingsGroupColor(context),
+                          side: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+                          shape: const StadiumBorder(),
+                          labelPadding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 10,
+                          ),
                         ),
                       ),
                     ),
