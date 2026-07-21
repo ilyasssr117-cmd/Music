@@ -1124,11 +1124,6 @@ class _PlaylistTrackItem extends ConsumerWidget {
   }) async {
     if (isQueued) return;
 
-    try {
-      await ref.read(playbackProvider.notifier).playTrackSmart(track);
-      return;
-    } catch (_) {}
-
     final playedLocal = await _playLocalIfAvailable(context, ref);
     if (playedLocal) {
       return;

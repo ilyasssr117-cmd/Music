@@ -6,7 +6,6 @@ import 'package:spotiflac_android/providers/extension_provider.dart';
 import 'package:spotiflac_android/providers/track_provider.dart';
 import 'package:spotiflac_android/providers/preview_player_provider.dart';
 import 'package:spotiflac_android/providers/download_queue_provider.dart';
-import 'package:spotiflac_android/providers/playback_provider.dart';
 import 'package:spotiflac_android/providers/settings_provider.dart';
 import 'package:spotiflac_android/widgets/track_collection_quick_actions.dart';
 import 'package:spotiflac_android/widgets/animation_utils.dart';
@@ -159,17 +158,6 @@ class _SearchTrackTile extends ConsumerWidget {
 
   const _SearchTrackTile({required this.track});
 
-  Future<void> _playTrack(BuildContext context, WidgetRef ref) async {
-    try {
-      await ref.read(playbackProvider.notifier).playTrackSmart(track);
-    } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.snackbarCannotOpenFile('$e'))),
-      );
-    }
-  }
-
   void _downloadTrack(BuildContext context, WidgetRef ref) {
     final settings = ref.read(settingsProvider);
     final extensionState = ref.read(extensionProvider);
@@ -264,7 +252,7 @@ class _SearchTrackTile extends ConsumerWidget {
           ),
         ],
       ),
-      onTap: () => _playTrack(context, ref),
+      onTap: () => _downloadTrack(context, ref),
     );
   }
 }

@@ -1690,11 +1690,6 @@ class _ArtistScreenState extends ConsumerState<ArtistScreen> {
   void _handlePopularTrackTap(Track track, {required bool isQueued}) async {
     if (isQueued) return;
 
-    try {
-      await ref.read(playbackProvider.notifier).playTrackSmart(track);
-      return;
-    } catch (_) {}
-
     final playedLocal = await _playLocalIfAvailable(track);
     if (playedLocal) {
       return;

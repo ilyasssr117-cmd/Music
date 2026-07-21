@@ -33,6 +33,7 @@ import 'package:spotiflac_android/services/downloaded_embedded_cover_resolver.da
 import 'package:spotiflac_android/screens/track_metadata_screen.dart';
 import 'package:spotiflac_android/screens/favorite_artists_screen.dart';
 import 'package:spotiflac_android/screens/downloaded_album_screen.dart';
+import 'package:spotiflac_android/screens/library_playlists_screen.dart';
 import 'package:spotiflac_android/widgets/re_enrich_field_dialog.dart';
 import 'package:spotiflac_android/widgets/batch_progress_dialog.dart';
 import 'package:spotiflac_android/widgets/batch_convert_sheet.dart';
@@ -3068,6 +3069,27 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                           onTapOutside: (_) {
                             FocusScope.of(context).unfocus();
                           },
+                        ),
+                      ),
+                    ),
+                  ),
+
+                if (shouldShowLibraryControls)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                      child: Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: FilledButton.tonalIcon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const LibraryPlaylistsScreen(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.playlist_play),
+                          label: Text(context.l10n.collectionPlaylists),
                         ),
                       ),
                     ),

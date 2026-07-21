@@ -403,11 +403,6 @@ class _TrackItemWithStatus extends ConsumerWidget {
   }) async {
     if (isQueued) return;
 
-    try {
-      await ref.read(playbackProvider.notifier).playTrackSmart(track);
-      return;
-    } catch (_) {}
-
     if (isInLocalLibrary) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
