@@ -25,6 +25,7 @@ import 'package:spotiflac_android/utils/clickable_metadata.dart';
 import 'package:spotiflac_android/widgets/audio_quality_badges.dart';
 import 'package:spotiflac_android/widgets/cross_extension_share_sheet.dart';
 import 'package:spotiflac_android/widgets/preview_button.dart';
+import 'package:spotiflac_android/utils/track_playback_helper.dart';
 import 'package:spotiflac_android/widgets/motion_header_banner.dart';
 
 class _AlbumCache {
@@ -1333,6 +1334,11 @@ class _AlbumTrackItem extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               PreviewButton(track: track),
+              IconButton(
+                icon: const Icon(Icons.download_rounded),
+                tooltip: context.l10n.dialogDownload,
+                onPressed: () => onDownload(),
+              ),
               TrackCollectionQuickActions(track: track),
             ],
           ),
@@ -1353,20 +1359,7 @@ class _AlbumTrackItem extends ConsumerWidget {
     required bool isQueued,
   }) async {
     if (isQueued) return;
-
-    final playedLocal = await _playLocalIfAvailable(context, ref);
-    if (playedLocal) {
-      return;
-    }
-
-    final streamed = await ref
-        .read(playbackProvider.notifier)
-        .streamTrack(track);
-    if (streamed) {
-      return;
-    }
-
-    onDownload();
+    await playTrackOrPreview(context, ref, track);
   }
 
   Future<bool> _playLocalIfAvailable(

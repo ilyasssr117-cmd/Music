@@ -232,6 +232,11 @@ class _TrackItemWithStatus extends ConsumerWidget {
       ),
     );
 
+    final historyLookup = historyLookupForTrack(track);
+    final isInHistory = ref
+        .watch(downloadHistoryExistsProvider(historyLookup))
+        .maybeWhen(data: (exists) => exists, orElse: () => false);
+
     final isInLocalLibrary = showLocalLibraryIndicator
         ? ref.watch(
             localLibraryProvider.select(
@@ -266,6 +271,8 @@ class _TrackItemWithStatus extends ConsumerWidget {
             context,
             ref,
             isQueued: isQueued,
+            isInHistory: isInHistory,
+            isInLocalLibrary: isInLocalLibrary,
           ),
           onLongPress: () => TrackCollectionQuickActions.showTrackOptionsSheet(
             context,
@@ -370,6 +377,11 @@ class _TrackItemWithStatus extends ConsumerWidget {
                   ),
                 ),
                 PreviewButton(track: track),
+                IconButton(
+                  icon: const Icon(Icons.download_rounded),
+                  tooltip: context.l10n.dialogDownload,
+                  onPressed: () => onDownload(),
+                ),
                 TrackCollectionQuickActions(track: track),
               ],
             ),
@@ -391,27 +403,11 @@ class _TrackItemWithStatus extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref, {
     required bool isQueued,
+    required bool isInHistory,
+    required bool isInLocalLibrary,
   }) async {
     if (isQueued) return;
-
-    final historyNotifier = ref.read(downloadHistoryProvider.notifier);
-    final historyItem = await historyNotifier.findExistingTrackAsync(
-      historyLookupForTrack(track),
-    );
-    if (historyItem != null && !await fileExists(historyItem.filePath)) {
-      historyNotifier.removeFromHistory(historyItem.id);
-    }
-
-    // Stream immediately (using a locally available file when present) instead
-    // of forcing the user to download the track first.
-    final streamed = await ref
-        .read(playbackProvider.notifier)
-        .streamTrack(track);
-    if (streamed) {
-      return;
-    }
-
-    onDownload();
+    await playTrackOrPreview(context, ref, track);
   }
 }
 

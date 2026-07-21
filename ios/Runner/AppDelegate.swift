@@ -2,7 +2,6 @@ import Flutter
 import UIKit
 import Gobackend
 
-
 @main
 @objc class AppDelegate: FlutterAppDelegate {
     private let CHANNEL = "com.zarz.spotiflac/backend"

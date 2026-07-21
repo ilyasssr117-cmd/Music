@@ -13,6 +13,7 @@ import 'package:spotiflac_android/utils/clickable_metadata.dart';
 import 'package:spotiflac_android/widgets/audio_quality_badges.dart';
 import 'package:spotiflac_android/widgets/cached_cover_image.dart';
 import 'package:spotiflac_android/widgets/preview_button.dart';
+import 'package:spotiflac_android/utils/track_playback_helper.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   final String query;
@@ -252,7 +253,7 @@ class _SearchTrackTile extends ConsumerWidget {
           ),
         ],
       ),
-      onTap: () => _downloadTrack(context, ref),
+      onTap: () async => playTrackOrPreview(context, ref, track),
     );
   }
 }

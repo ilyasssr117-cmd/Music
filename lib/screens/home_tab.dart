@@ -14,7 +14,6 @@ import 'package:spotiflac_android/providers/extension_provider.dart';
 import 'package:spotiflac_android/providers/recent_access_provider.dart';
 import 'package:spotiflac_android/providers/explore_provider.dart';
 import 'package:spotiflac_android/providers/local_library_provider.dart';
-import 'package:spotiflac_android/providers/playback_provider.dart';
 import 'package:spotiflac_android/screens/track_metadata_screen.dart';
 import 'package:spotiflac_android/screens/album_screen.dart';
 import 'package:spotiflac_android/screens/artist_screen.dart';
@@ -34,6 +33,7 @@ import 'package:spotiflac_android/utils/clickable_metadata.dart';
 import 'package:spotiflac_android/widgets/audio_quality_badges.dart';
 import 'package:spotiflac_android/widgets/cached_cover_image.dart';
 import 'package:spotiflac_android/widgets/preview_button.dart';
+import 'package:spotiflac_android/utils/track_playback_helper.dart';
 import 'package:spotiflac_android/widgets/settings_group.dart';
 
 part 'home_tab_helpers.dart';

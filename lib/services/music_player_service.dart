@@ -51,11 +51,6 @@ class PlayableMedia {
 
   bool get isContentUri => source.startsWith('content://');
 
-  /// Whether [source] points at a remote resource that should be streamed
-  /// online (e.g. a preview/stream URL) instead of read from disk.
-  bool get isRemoteSource =>
-      source.startsWith('http://') || source.startsWith('https://');
-
   MediaItem toMediaItem({String? resolvedSource}) {
     return MediaItem(
       id: id,
@@ -452,11 +447,7 @@ class MusicPlayerHandler extends BaseAudioHandler
       await _player.setAudioContext(_musicAudioContext);
       await _activateAudioSession();
       await _player.stop();
-      await _player.play(
-        media.isRemoteSource
-            ? UrlSource(resolved)
-            : DeviceFileSource(resolved),
-      );
+      await _player.play(DeviceFileSource(resolved));
       mediaItem.add(media.toMediaItem(resolvedSource: resolved));
       _broadcastPosition(Duration.zero, force: true);
       _broadcastState(playerState: PlayerState.playing);
