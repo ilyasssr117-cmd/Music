@@ -51,6 +51,12 @@ class PlayableMedia {
 
   bool get isContentUri => source.startsWith('content://');
 
+  bool get isRemoteUrl {
+    final uri = Uri.tryParse(source);
+    final scheme = uri?.scheme.toLowerCase();
+    return scheme == 'http' || scheme == 'https';
+  }
+
   MediaItem toMediaItem({String? resolvedSource}) {
     return MediaItem(
       id: id,
@@ -447,7 +453,16 @@ class MusicPlayerHandler extends BaseAudioHandler
       await _player.setAudioContext(_musicAudioContext);
       await _activateAudioSession();
       await _player.stop();
-      await _player.play(DeviceFileSource(resolved));
+
+      final resolvedUri = Uri.tryParse(resolved);
+      final isRemote = resolvedUri != null &&
+          (resolvedUri.scheme == 'http' || resolvedUri.scheme == 'https');
+      if (isRemote) {
+        await _player.play(UrlSource(resolved));
+      } else {
+        await _player.play(DeviceFileSource(resolved));
+      }
+
       mediaItem.add(media.toMediaItem(resolvedSource: resolved));
       _broadcastPosition(Duration.zero, force: true);
       _broadcastState(playerState: PlayerState.playing);

@@ -22,7 +22,6 @@ import 'package:spotiflac_android/widgets/audio_quality_badges.dart';
 import 'package:spotiflac_android/widgets/cached_cover_image.dart';
 import 'package:spotiflac_android/widgets/motion_header_banner.dart';
 import 'package:spotiflac_android/widgets/preview_button.dart';
-import 'package:spotiflac_android/utils/track_playback_helper.dart';
 
 class PlaylistScreen extends ConsumerStatefulWidget {
   final String playlistName;
@@ -1103,20 +1102,6 @@ class _PlaylistTrackItem extends ConsumerWidget {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                tooltip: context.l10n.dialogDownload,
-                icon: Icon(
-                  Icons.download_rounded,
-                  color: colorScheme.onSurfaceVariant,
-                  size: 20,
-                ),
-                onPressed: onDownload,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 36,
-                  minHeight: 36,
-                ),
-              ),
               PreviewButton(track: track),
               TrackCollectionQuickActions(track: track),
             ],
@@ -1137,7 +1122,19 @@ class _PlaylistTrackItem extends ConsumerWidget {
     WidgetRef ref, {
     required bool isQueued,
   }) async {
-    await playTrackLikeSpotify(context, ref, track);
+    if (isQueued) return;
+
+    try {
+      await ref.read(playbackProvider.notifier).playTrackSmart(track);
+      return;
+    } catch (_) {}
+
+    final playedLocal = await _playLocalIfAvailable(context, ref);
+    if (playedLocal) {
+      return;
+    }
+
+    onDownload();
   }
 
   Future<bool> _playLocalIfAvailable(

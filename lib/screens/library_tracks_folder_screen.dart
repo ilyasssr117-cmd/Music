@@ -1467,7 +1467,7 @@ class _CollectionTrackTile extends ConsumerWidget {
               ? onTap
               : () {
                   if (mode == LibraryTracksFolderMode.wishlist) {
-                    _downloadTrack(context, ref);
+                    ref.read(playbackProvider.notifier).playTrackSmart(track);
                     return;
                   }
 

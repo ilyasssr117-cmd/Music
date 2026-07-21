@@ -25,7 +25,6 @@ import 'package:spotiflac_android/widgets/animation_utils.dart';
 import 'package:spotiflac_android/utils/clickable_metadata.dart';
 import 'package:spotiflac_android/widgets/cached_cover_image.dart';
 import 'package:spotiflac_android/widgets/motion_header_banner.dart';
-import 'package:spotiflac_android/utils/track_playback_helper.dart';
 import 'package:spotiflac_android/widgets/cross_extension_share_sheet.dart';
 
 class _ArtistCache {
@@ -1679,20 +1678,6 @@ class _ArtistScreenState extends ConsumerState<ArtistScreen> {
                     ],
                   ),
                 ),
-                IconButton(
-                  tooltip: context.l10n.dialogDownload,
-                  icon: Icon(
-                    Icons.download_rounded,
-                    color: colorScheme.onSurfaceVariant,
-                    size: 20,
-                  ),
-                  onPressed: () => _downloadTrack(track),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 36,
-                    minHeight: 36,
-                  ),
-                ),
                 TrackCollectionQuickActions(track: track),
               ],
             ),
@@ -1703,7 +1688,19 @@ class _ArtistScreenState extends ConsumerState<ArtistScreen> {
   }
 
   void _handlePopularTrackTap(Track track, {required bool isQueued}) async {
-    await playTrackLikeSpotify(context, ref, track);
+    if (isQueued) return;
+
+    try {
+      await ref.read(playbackProvider.notifier).playTrackSmart(track);
+      return;
+    } catch (_) {}
+
+    final playedLocal = await _playLocalIfAvailable(track);
+    if (playedLocal) {
+      return;
+    }
+
+    _downloadTrack(track);
   }
 
   Future<bool> _playLocalIfAvailable(Track track) async {

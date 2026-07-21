@@ -73,6 +73,64 @@ class PlaybackController extends Notifier<PlaybackState> {
     await openFile(path);
   }
 
+  Future<void> playTrackSmart(Track track) async {
+    final historyState = ref.read(downloadHistoryProvider);
+    final historyNotifier = ref.read(downloadHistoryProvider.notifier);
+
+    final localItem = await _findLocalLibraryItemForTrack(track);
+    if (localItem != null && await fileExists(localItem.filePath)) {
+      await playLocalPath(
+        path: localItem.filePath,
+        title: localItem.trackName,
+        artist: localItem.artistName,
+        album: localItem.albumName,
+        coverUrl: localItem.coverPath ?? track.coverUrl ?? '',
+        track: track,
+      );
+      return;
+    }
+
+    final historyItem = await _findDownloadHistoryItemForTrack(
+      track,
+      historyState,
+    );
+    if (historyItem != null) {
+      if (await fileExists(historyItem.filePath)) {
+        await playLocalPath(
+          path: historyItem.filePath,
+          title: track.name,
+          artist: track.artistName,
+          album: track.albumName,
+          coverUrl: track.coverUrl ?? '',
+          track: track,
+        );
+        return;
+      }
+      historyNotifier.removeFromHistory(historyItem.id);
+    }
+
+    final previewUrl = track.previewUrl?.trim();
+    if (previewUrl != null && previewUrl.isNotEmpty) {
+      _log.d('Playing online preview for "${track.name}"');
+      await ref.read(musicPlayerControllerProvider).playSingle(
+        PlayableMedia(
+          id: track.id,
+          source: previewUrl,
+          title: track.name,
+          artist: track.artistName,
+          album: track.albumName,
+          artUri: _normalizeArtUri(track.coverUrl ?? ''),
+          duration: track.duration > 0
+              ? Duration(seconds: track.duration)
+              : null,
+        ),
+      );
+      return;
+    }
+
+    throw StateError('No playable source available for this track.');
+  }
+
   /// Plays a local-library album/list starting at [startItem], queuing the rest
   /// so playback continues to the next track automatically. Honors player mode.
   Future<void> playLocalLibraryQueue(
@@ -144,15 +202,14 @@ class PlaybackController extends Notifier<PlaybackState> {
     if (tracks.isEmpty) return;
 
     final orderedTracks = _orderedTracksFromStartIndex(tracks, startIndex);
+    final queue = <PlayableMedia>[];
+    var skippedCueVirtualTrack = false;
 
-    if (await _useInternalPlayer()) {
-      final queue = <PlayableMedia>[];
-      var skippedCueVirtualTrack = false;
-      final resolvedPaths = await _resolveTrackPaths(orderedTracks);
-      for (var index = 0; index < orderedTracks.length; index++) {
-        final track = orderedTracks[index];
-        final resolvedPath = resolvedPaths[index];
-        if (resolvedPath == null) continue;
+    final resolvedPaths = await _resolveTrackPaths(orderedTracks);
+    for (var index = 0; index < orderedTracks.length; index++) {
+      final track = orderedTracks[index];
+      final resolvedPath = resolvedPaths[index];
+      if (resolvedPath != null) {
         if (isCueVirtualPath(resolvedPath)) {
           skippedCueVirtualTrack = true;
           continue;
@@ -170,37 +227,30 @@ class PlaybackController extends Notifier<PlaybackState> {
                 : null,
           ),
         );
+        continue;
       }
 
-      if (queue.isNotEmpty) {
-        _log.d('Playing ${queue.length} tracks in the internal player');
-        await ref.read(musicPlayerControllerProvider).playAll(queue);
-        return;
+      final previewUrl = track.previewUrl?.trim();
+      if (previewUrl != null && previewUrl.isNotEmpty) {
+        queue.add(
+          PlayableMedia(
+            id: track.id,
+            source: previewUrl,
+            title: track.name,
+            artist: track.artistName,
+            album: track.albumName,
+            artUri: _normalizeArtUri(track.coverUrl ?? ''),
+            duration: track.duration > 0
+                ? Duration(seconds: track.duration)
+                : null,
+          ),
+        );
       }
-      if (skippedCueVirtualTrack) {
-        throw Exception(cueVirtualTrackRequiresSplitMessage);
-      }
-      throw Exception(
-        'No local audio file is available to play. Download the track first.',
-      );
     }
 
-    var skippedCueVirtualTrack = false;
-    for (final track in orderedTracks) {
-      final resolvedPath = await _resolveTrackPath(track);
-      if (resolvedPath == null) {
-        continue;
-      }
-      if (isCueVirtualPath(resolvedPath)) {
-        skippedCueVirtualTrack = true;
-        continue;
-      }
-
-      _log.d(
-        'Opening first available external track for list playback: '
-        '"${track.name}" by ${track.artistName} -> $resolvedPath',
-      );
-      await openFile(resolvedPath);
+    if (queue.isNotEmpty) {
+      _log.d('Playing ${queue.length} tracks in the internal player');
+      await ref.read(musicPlayerControllerProvider).playAll(queue);
       return;
     }
 
@@ -208,9 +258,7 @@ class PlaybackController extends Notifier<PlaybackState> {
       throw Exception(cueVirtualTrackRequiresSplitMessage);
     }
 
-    throw Exception(
-      'No local audio file is available to open. Download the track first.',
-    );
+    throw Exception('No playable source is available for this track list.');
   }
 
   List<Track> _orderedTracksFromStartIndex(List<Track> tracks, int startIndex) {

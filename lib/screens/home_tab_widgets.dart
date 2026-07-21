@@ -376,20 +376,6 @@ class _TrackItemWithStatus extends ConsumerWidget {
                     ],
                   ),
                 ),
-                IconButton(
-                  tooltip: context.l10n.dialogDownload,
-                  icon: Icon(
-                    Icons.download_rounded,
-                    color: colorScheme.onSurfaceVariant,
-                    size: 20,
-                  ),
-                  onPressed: onDownload,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 36,
-                    minHeight: 36,
-                  ),
-                ),
                 PreviewButton(track: track),
                 TrackCollectionQuickActions(track: track),
               ],
@@ -415,7 +401,45 @@ class _TrackItemWithStatus extends ConsumerWidget {
     required bool isInHistory,
     required bool isInLocalLibrary,
   }) async {
-    await playTrackLikeSpotify(context, ref, track);
+    if (isQueued) return;
+
+    try {
+      await ref.read(playbackProvider.notifier).playTrackSmart(track);
+      return;
+    } catch (_) {}
+
+    if (isInLocalLibrary) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.snackbarAlreadyInLibrary(track.name)),
+          ),
+        );
+      }
+      return;
+    }
+
+    final historyNotifier = ref.read(downloadHistoryProvider.notifier);
+    final historyItem = await historyNotifier.findExistingTrackAsync(
+      historyLookupForTrack(track),
+    );
+    if (historyItem != null) {
+      final exists = await fileExists(historyItem.filePath);
+      if (exists) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(context.l10n.snackbarAlreadyDownloaded(track.name)),
+            ),
+          );
+        }
+        return;
+      } else {
+        historyNotifier.removeFromHistory(historyItem.id);
+      }
+    }
+
+    onDownload();
   }
 }
 
