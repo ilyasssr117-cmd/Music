@@ -41,6 +41,7 @@ import 'package:spotiflac_android/widgets/audio_quality_badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:spotiflac_android/services/cover_cache_manager.dart';
 import 'package:spotiflac_android/screens/library_tracks_folder_screen.dart';
+import 'package:spotiflac_android/screens/library_playlists_screen.dart';
 import 'package:spotiflac_android/screens/local_album_screen.dart';
 import 'package:spotiflac_android/utils/clickable_metadata.dart';
 import 'package:spotiflac_android/utils/path_match_keys.dart';
@@ -2522,6 +2523,12 @@ class _QueueTabState extends ConsumerState<QueueTab> {
     );
   }
 
+  void _openPlaylistsScreen() {
+    _navigateWithUnfocus(
+      MaterialPageRoute(builder: (_) => const LibraryPlaylistsScreen()),
+    );
+  }
+
   Future<void> _showCreatePlaylistDialog(BuildContext context) async {
     final controller = TextEditingController();
     final formKey = GlobalKey<FormState>();
@@ -2845,6 +2852,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
       ),
     );
     final collectionState = ref.read(libraryCollectionsProvider);
+    final playlistCount = collectionState.playlistCount;
     final historyViewMode = ref.watch(
       settingsProvider.select((s) => s.historyViewMode),
     );
@@ -3116,6 +3124,13 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                                   onTap: () {
                                     _animateToFilterPage(2);
                                   },
+                                ),
+                                const SizedBox(width: 8),
+                                _FilterChip(
+                                  label: context.l10n.collectionPlaylists,
+                                  count: playlistCount,
+                                  isSelected: false,
+                                  onTap: _openPlaylistsScreen,
                                 ),
                               ],
                             ),
