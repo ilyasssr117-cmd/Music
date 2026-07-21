@@ -60,6 +60,7 @@ class _ProviderPriorityPageState extends ConsumerState<ProviderPriorityPage> {
           slivers: [
             SliverAppBar(
               expandedHeight: 120 + topPadding,
+              primary: false,
               collapsedHeight: kToolbarHeight,
               floating: false,
               pinned: true,
@@ -67,7 +68,7 @@ class _ProviderPriorityPageState extends ConsumerState<ProviderPriorityPage> {
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                icon: const Icon(Icons.arrow_back),
+                icon: const BackButtonIcon(),
                 onPressed: () async {
                   if (_hasChanges) {
                     final shouldPop = await _confirmDiscard(context);
@@ -97,10 +98,7 @@ class _ProviderPriorityPageState extends ConsumerState<ProviderPriorityPage> {
                   final leftPadding = 56 - (32 * expandRatio);
                   return FlexibleSpaceBar(
                     expandedTitleScale: 1.0,
-                    titlePadding: EdgeInsets.only(
-                      left: leftPadding,
-                      bottom: 16,
-                    ),
+                    titlePadding: EdgeInsetsDirectional.only(start: leftPadding, bottom: 16),
                     title: Text(
                       context.l10n.providerPriorityTitle,
                       style: TextStyle(

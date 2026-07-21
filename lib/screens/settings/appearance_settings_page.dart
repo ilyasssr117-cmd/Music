@@ -24,6 +24,7 @@ class AppearanceSettingsPage extends ConsumerWidget {
           slivers: [
             SliverAppBar(
               expandedHeight: 120 + topPadding,
+              primary: false,
               collapsedHeight: kToolbarHeight,
               floating: false,
               pinned: true,
@@ -31,7 +32,7 @@ class AppearanceSettingsPage extends ConsumerWidget {
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                icon: const Icon(Icons.arrow_back),
+                icon: const BackButtonIcon(),
                 onPressed: () => Navigator.pop(context),
               ),
               flexibleSpace: _AppBarTitle(
@@ -354,7 +355,7 @@ class _ColorPalettePicker extends StatelessWidget {
               .padLeft(8, '0')
               .toUpperCase();
           return Padding(
-            padding: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsetsDirectional.only(end: 12),
             child: Semantics(
               button: true,
               selected: isSelected,
@@ -452,7 +453,7 @@ class _AppBarTitle extends StatelessWidget {
         final leftPadding = 56 - (32 * expandRatio);
         return FlexibleSpaceBar(
           expandedTitleScale: 1.0,
-          titlePadding: EdgeInsets.only(left: leftPadding, bottom: 16),
+          titlePadding: EdgeInsetsDirectional.only(start: leftPadding, bottom: 16),
           title: Text(
             title,
             style: TextStyle(
@@ -602,7 +603,7 @@ class _HistoryViewSelector extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 8, bottom: 8),
+            padding: const EdgeInsetsDirectional.only(start: 8, bottom: 8),
             child: Text(
               context.l10n.appearanceHistoryView,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -763,7 +764,7 @@ class _LanguageSelector extends StatelessWidget {
       leading: Icon(Icons.language, color: colorScheme.onSurfaceVariant),
       title: Text(context.l10n.appearanceLanguage),
       subtitle: Text(_getLanguageName(currentLocale)),
-      trailing: Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
+      trailing: Transform.flip(flipX: Directionality.of(context) == TextDirection.rtl, child: Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant)),
       onTap: () => _showLanguagePicker(context),
     );
   }

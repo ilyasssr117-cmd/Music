@@ -577,7 +577,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                       tooltip: MaterialLocalizations.of(
                         context,
                       ).backButtonTooltip,
-                      icon: const Icon(Icons.arrow_back),
+                      icon: const BackButtonIcon(),
                       style: IconButton.styleFrom(
                         backgroundColor: colorScheme.surfaceContainerHighest,
                         foregroundColor: colorScheme.onSurfaceVariant,
@@ -640,7 +640,10 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                 children: [
                   Text(context.l10n.setupNext),
                   const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward),
+                  Transform.flip(
+                    flipX: Directionality.of(context) == TextDirection.rtl,
+                    child: const Icon(Icons.arrow_forward),
+                  ),
                 ],
               ),
               icon: const SizedBox.shrink(), // Custom layout

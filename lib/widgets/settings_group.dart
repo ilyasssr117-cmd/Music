@@ -142,9 +142,12 @@ class SettingsItem extends StatelessWidget {
                   trailing!,
                 ] else if (onTap != null) ...[
                   const SizedBox(width: 8),
-                  Icon(
-                    Icons.chevron_right,
-                    color: colorScheme.onSurfaceVariant,
+                  Transform.flip(
+                    flipX: Directionality.of(context) == TextDirection.rtl,
+                    child: Icon(
+                      Icons.chevron_right,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ],

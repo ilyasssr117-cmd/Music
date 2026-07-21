@@ -87,6 +87,7 @@ class _RepoTabState extends ConsumerState<RepoTab> {
           slivers: [
             SliverAppBar(
               expandedHeight: 120 + topPadding,
+              primary: false,
               collapsedHeight: kToolbarHeight,
               floating: false,
               pinned: true,
@@ -112,7 +113,7 @@ class _RepoTabState extends ConsumerState<RepoTab> {
 
                   return FlexibleSpaceBar(
                     expandedTitleScale: 1.0,
-                    titlePadding: const EdgeInsets.only(left: 24, bottom: 16),
+                    titlePadding: const EdgeInsetsDirectional.only(start: 24, bottom: 16),
                     title: Text(
                       context.l10n.storeTitle,
                       style: TextStyle(

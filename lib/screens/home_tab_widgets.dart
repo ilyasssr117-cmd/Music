@@ -42,7 +42,7 @@ class _SearchProviderDropdown extends ConsumerWidget {
 
     if (!hasAnyProvider) {
       return Padding(
-        padding: const EdgeInsets.only(left: 12, right: 8),
+        padding: const EdgeInsetsDirectional.only(start: 12, end: 8),
         child: SizedBox(
           width: 28,
           height: 28,
@@ -94,7 +94,7 @@ class _SearchProviderDropdown extends ConsumerWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(left: 8),
+      padding: const EdgeInsetsDirectional.only(start: 8),
       child: PopupMenuButton<String>(
         icon: Row(
           mainAxisSize: MainAxisSize.min,
@@ -522,10 +522,13 @@ class _CollectionItemWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: colorScheme.onSurfaceVariant,
-                  size: 24,
+                Transform.flip(
+                  flipX: Directionality.of(context) == TextDirection.rtl,
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 24,
+                  ),
                 ),
               ],
             ),
@@ -620,10 +623,13 @@ class _SearchArtistItemWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: colorScheme.onSurfaceVariant,
-                  size: 24,
+                Transform.flip(
+                  flipX: Directionality.of(context) == TextDirection.rtl,
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 24,
+                  ),
                 ),
               ],
             ),
@@ -721,10 +727,13 @@ class _SearchAlbumItemWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: colorScheme.onSurfaceVariant,
-                  size: 24,
+                Transform.flip(
+                  flipX: Directionality.of(context) == TextDirection.rtl,
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 24,
+                  ),
                 ),
               ],
             ),
@@ -821,10 +830,13 @@ class _SearchPlaylistItemWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: colorScheme.onSurfaceVariant,
-                  size: 24,
+                Transform.flip(
+                  flipX: Directionality.of(context) == TextDirection.rtl,
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 24,
+                  ),
                 ),
               ],
             ),

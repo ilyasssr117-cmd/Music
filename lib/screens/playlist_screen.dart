@@ -513,7 +513,7 @@ class _PlaylistScreenState extends ConsumerState<PlaylistScreen> {
             color: Colors.black.withValues(alpha: 0.4),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.arrow_back, color: Colors.white),
+          child: IconTheme(data: const IconThemeData(color: Colors.white), child: const BackButtonIcon()),
         ),
         onPressed: () => Navigator.pop(context),
       ),

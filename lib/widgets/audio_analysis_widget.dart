@@ -989,7 +989,7 @@ class _AudioAnalysisCardState extends State<AudioAnalysisCard> {
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
+                Transform.flip(flipX: Directionality.of(context) == TextDirection.rtl, child: Icon(Icons.chevron_right, color: cs.onSurfaceVariant)),
               ],
             ),
           ),

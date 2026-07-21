@@ -106,7 +106,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                       tooltip: MaterialLocalizations.of(
                         context,
                       ).backButtonTooltip,
-                      icon: const Icon(Icons.arrow_back),
+                      icon: const BackButtonIcon(),
                       style: IconButton.styleFrom(
                         backgroundColor: colorScheme.surfaceContainerHighest,
                         foregroundColor: colorScheme.onSurfaceVariant,

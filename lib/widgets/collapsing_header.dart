@@ -31,7 +31,7 @@ class CollapsingHeader extends StatelessWidget {
           leading: showBackButton
               ? IconButton(
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const BackButtonIcon(),
                   onPressed: () => Navigator.pop(context),
                 )
               : null,
@@ -49,8 +49,8 @@ class CollapsingHeader extends StatelessWidget {
                 titlePadding: EdgeInsets.zero,
                 title: Container(
                   alignment: Alignment.bottomLeft,
-                  padding: EdgeInsets.only(
-                    left: Tween<double>(
+                  padding: EdgeInsetsDirectional.only(
+                    start: Tween<double>(
                       begin: showBackButton ? 56 : 24,
                       end: 24,
                     ).evaluate(animation),

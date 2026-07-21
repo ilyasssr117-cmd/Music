@@ -1171,7 +1171,7 @@ class _TrackMetadataScreenState extends ConsumerState<TrackMetadataScreen> {
                     color: Colors.black.withValues(alpha: 0.4),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_back, color: Colors.white),
+                  child: IconTheme(data: const IconThemeData(color: Colors.white), child: const BackButtonIcon()),
                 ),
                 onPressed: _popWithMetadataResult,
               ),
@@ -3859,7 +3859,7 @@ class _TrackMetadataScreenState extends ConsumerState<TrackMetadataScreen> {
 
             Widget sectionLabel(String text) {
               return Padding(
-                padding: const EdgeInsets.only(left: 2, bottom: 12),
+                padding: const EdgeInsetsDirectional.only(start: 2, bottom: 12),
                 child: Text(
                   text,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(

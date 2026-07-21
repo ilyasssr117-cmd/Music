@@ -124,7 +124,7 @@ class _ExtensionDetailsScreenState
       ),
       leading: IconButton(
         tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-        icon: const Icon(Icons.arrow_back),
+        icon: const BackButtonIcon(),
         onPressed: () => Navigator.pop(context),
       ),
     );

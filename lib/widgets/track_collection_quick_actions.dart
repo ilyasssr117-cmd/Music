@@ -43,7 +43,7 @@ class TrackCollectionQuickActions extends ConsumerWidget {
         size: 20,
       ),
       onPressed: () => showTrackOptionsSheet(context, ref, track),
-      padding: const EdgeInsets.only(left: 12),
+      padding: const EdgeInsetsDirectional.only(start: 12),
       constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
     );
   }

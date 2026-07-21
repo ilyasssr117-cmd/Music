@@ -22,6 +22,7 @@ class AboutPage extends StatelessWidget {
           slivers: [
             SliverAppBar(
               expandedHeight: 120 + topPadding,
+              primary: false,
               collapsedHeight: kToolbarHeight,
               floating: false,
               pinned: true,
@@ -29,7 +30,7 @@ class AboutPage extends StatelessWidget {
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                icon: const Icon(Icons.arrow_back),
+                icon: const BackButtonIcon(),
                 onPressed: () => Navigator.pop(context),
               ),
               flexibleSpace: LayoutBuilder(
@@ -43,10 +44,7 @@ class AboutPage extends StatelessWidget {
                   final leftPadding = 56 - (32 * expandRatio);
                   return FlexibleSpaceBar(
                     expandedTitleScale: 1.0,
-                    titlePadding: EdgeInsets.only(
-                      left: leftPadding,
-                      bottom: 16,
-                    ),
+                    titlePadding: EdgeInsetsDirectional.only(start: leftPadding, bottom: 16),
                     title: Text(
                       context.l10n.aboutTitle,
                       style: TextStyle(
@@ -433,7 +431,7 @@ class _ContributorItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
+                Transform.flip(flipX: Directionality.of(context) == TextDirection.rtl, child: Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant)),
               ],
             ),
           ),
@@ -700,9 +698,12 @@ class _AboutSettingsItem extends StatelessWidget {
                   ),
                 ),
                 if (onTap != null)
-                  Icon(
-                    Icons.chevron_right,
-                    color: colorScheme.onSurfaceVariant,
+                  Transform.flip(
+                    flipX: Directionality.of(context) == TextDirection.rtl,
+                    child: Icon(
+                      Icons.chevron_right,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
               ],
             ),

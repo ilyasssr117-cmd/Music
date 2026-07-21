@@ -92,6 +92,7 @@ class _ExtensionDetailPageState extends ConsumerState<ExtensionDetailPage> {
           slivers: [
             SliverAppBar(
               expandedHeight: 120 + topPadding,
+              primary: false,
               collapsedHeight: kToolbarHeight,
               floating: false,
               pinned: true,
@@ -99,7 +100,7 @@ class _ExtensionDetailPageState extends ConsumerState<ExtensionDetailPage> {
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                icon: const Icon(Icons.arrow_back),
+                icon: const BackButtonIcon(),
                 onPressed: () => Navigator.pop(context),
               ),
               flexibleSpace: LayoutBuilder(
@@ -113,10 +114,7 @@ class _ExtensionDetailPageState extends ConsumerState<ExtensionDetailPage> {
                   final leftPadding = 56 - (32 * expandRatio);
                   return FlexibleSpaceBar(
                     expandedTitleScale: 1.0,
-                    titlePadding: EdgeInsets.only(
-                      left: leftPadding,
-                      bottom: 16,
-                    ),
+                    titlePadding: EdgeInsetsDirectional.only(start: leftPadding, bottom: 16),
                     title: Text(
                       extension.displayName,
                       style: TextStyle(
@@ -1015,9 +1013,12 @@ class _SettingItemState extends State<_SettingItem> {
               );
         break;
       default:
-        trailing = Icon(
-          Icons.chevron_right,
-          color: colorScheme.onSurfaceVariant,
+        trailing = Transform.flip(
+          flipX: Directionality.of(context) == TextDirection.rtl,
+          child: Icon(
+            Icons.chevron_right,
+            color: colorScheme.onSurfaceVariant,
+          ),
         );
     }
 

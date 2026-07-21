@@ -1294,6 +1294,7 @@ class _HomeTabState extends ConsumerState<HomeTab>
             slivers: [
               SliverAppBar(
                 expandedHeight: 120 + topPadding,
+                primary: false,
                 collapsedHeight: kToolbarHeight,
                 floating: false,
                 pinned: true,
@@ -1311,7 +1312,7 @@ class _HomeTabState extends ConsumerState<HomeTab>
 
                     return FlexibleSpaceBar(
                       expandedTitleScale: 1.0,
-                      titlePadding: const EdgeInsets.only(left: 24, bottom: 16),
+                      titlePadding: const EdgeInsetsDirectional.only(start: 24, bottom: 16),
                       title: Text(
                         context.l10n.homeTitle,
                         style: TextStyle(
@@ -1698,7 +1699,7 @@ class _HomeTabState extends ConsumerState<HomeTab>
                     ),
                     child: Container(
                       width: coverSize,
-                      margin: const EdgeInsets.only(right: 12),
+                      margin: const EdgeInsetsDirectional.only(end: 12),
                       child: Column(
                         children: [
                           _DownloadedOrRemoteCover(
@@ -3489,7 +3490,7 @@ class _HomeTabState extends ConsumerState<HomeTab>
         child: Row(
           children: [
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsetsDirectional.only(end: 8),
               child: FilterChip(
                 label: Text(context.l10n.historyFilterAll),
                 selected: selectedFilter == 'all',
@@ -3503,7 +3504,7 @@ class _HomeTabState extends ConsumerState<HomeTab>
             ...filters.map((filter) {
               final isSelected = selectedFilter == filter.id;
               return Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsetsDirectional.only(end: 8),
                 child: FilterChip(
                   label: Text(filter.label ?? filter.id),
                   selected: isSelected,

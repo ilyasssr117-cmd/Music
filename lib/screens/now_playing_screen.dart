@@ -583,7 +583,7 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
                             return ListTile(
                               key: ValueKey('${item.id}_$i'),
                               contentPadding:
-                                  const EdgeInsets.only(left: 16, right: 4),
+                                  const EdgeInsetsDirectional.only(start: 16, end: 4),
                               leading: Icon(
                                 isCurrent
                                     ? Icons.equalizer

@@ -71,6 +71,7 @@ class _ExtensionsPageState extends ConsumerState<ExtensionsPage> {
           slivers: [
             SliverAppBar(
               expandedHeight: 120 + topPadding,
+              primary: false,
               collapsedHeight: kToolbarHeight,
               floating: false,
               pinned: true,
@@ -78,7 +79,7 @@ class _ExtensionsPageState extends ConsumerState<ExtensionsPage> {
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                icon: const Icon(Icons.arrow_back),
+                icon: const BackButtonIcon(),
                 onPressed: () => Navigator.pop(context),
               ),
               flexibleSpace: LayoutBuilder(
@@ -92,10 +93,7 @@ class _ExtensionsPageState extends ConsumerState<ExtensionsPage> {
                   final leftPadding = 56 - (32 * expandRatio);
                   return FlexibleSpaceBar(
                     expandedTitleScale: 1.0,
-                    titlePadding: EdgeInsets.only(
-                      left: leftPadding,
-                      bottom: 16,
-                    ),
+                    titlePadding: EdgeInsetsDirectional.only(start: leftPadding, bottom: 16),
                     title: Text(
                       context.l10n.extensionsTitle,
                       style: TextStyle(
@@ -569,11 +567,14 @@ class _DownloadPriorityItem extends ConsumerWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: hasDownloadExtensions
+            Transform.flip(
+              flipX: Directionality.of(context) == TextDirection.rtl,
+              child: Icon(
+                Icons.chevron_right,
+                color: hasDownloadExtensions
                   ? colorScheme.onSurfaceVariant
                   : colorScheme.outline,
+              ),
             ),
           ],
         ),
@@ -636,11 +637,14 @@ class _MetadataPriorityItem extends ConsumerWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: hasMetadataExtensions
+            Transform.flip(
+              flipX: Directionality.of(context) == TextDirection.rtl,
+              child: Icon(
+                Icons.chevron_right,
+                color: hasMetadataExtensions
                   ? colorScheme.onSurfaceVariant
                   : colorScheme.outline,
+              ),
             ),
           ],
         ),
@@ -703,11 +707,14 @@ class _DownloadFallbackItem extends ConsumerWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: hasDownloadExtensions
+            Transform.flip(
+              flipX: Directionality.of(context) == TextDirection.rtl,
+              child: Icon(
+                Icons.chevron_right,
+                color: hasDownloadExtensions
                   ? colorScheme.onSurfaceVariant
                   : colorScheme.outline,
+              ),
             ),
           ],
         ),
@@ -788,11 +795,14 @@ class _SearchProviderSelector extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: !hasAnyProvider
+                Transform.flip(
+                  flipX: Directionality.of(context) == TextDirection.rtl,
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: !hasAnyProvider
                       ? colorScheme.outline
                       : colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -936,7 +946,7 @@ class _HomeFeedProviderSelector extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
+                Transform.flip(flipX: Directionality.of(context) == TextDirection.rtl, child: Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant)),
               ],
             ),
           ),

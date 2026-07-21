@@ -22,6 +22,7 @@ class LyricsSettingsPage extends ConsumerWidget {
           slivers: [
             SliverAppBar(
               expandedHeight: 120 + topPadding,
+              primary: false,
               collapsedHeight: kToolbarHeight,
               floating: false,
               pinned: true,
@@ -29,7 +30,7 @@ class LyricsSettingsPage extends ConsumerWidget {
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                icon: const Icon(Icons.arrow_back),
+                icon: const BackButtonIcon(),
                 onPressed: () => Navigator.pop(context),
               ),
               flexibleSpace: LayoutBuilder(
@@ -43,10 +44,7 @@ class LyricsSettingsPage extends ConsumerWidget {
                   final leftPadding = 56 - (32 * expandRatio);
                   return FlexibleSpaceBar(
                     expandedTitleScale: 1.0,
-                    titlePadding: EdgeInsets.only(
-                      left: leftPadding,
-                      bottom: 16,
-                    ),
+                    titlePadding: EdgeInsetsDirectional.only(start: leftPadding, bottom: 16),
                     title: Text(
                       context.l10n.settingsLyrics,
                       style: TextStyle(
@@ -322,9 +320,9 @@ class LyricsSettingsPage extends ConsumerWidget {
       ),
       isScrollControlled: true,
       builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
+        padding: EdgeInsetsDirectional.only(
+          start: 24,
+          end: 24,
           top: 24,
           bottom: 24 + MediaQuery.viewInsetsOf(context).bottom,
         ),

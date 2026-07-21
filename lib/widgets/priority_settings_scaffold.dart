@@ -63,7 +63,7 @@ class PrioritySettingsScaffold extends StatelessWidget {
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                icon: const Icon(Icons.arrow_back),
+                icon: const BackButtonIcon(),
                 onPressed: () => _handleBack(context),
               ),
               actions: [
@@ -84,8 +84,8 @@ class PrioritySettingsScaffold extends StatelessWidget {
                   final leftPadding = 56 - (32 * expandRatio);
                   return FlexibleSpaceBar(
                     expandedTitleScale: 1.0,
-                    titlePadding: EdgeInsets.only(
-                      left: leftPadding,
+                    titlePadding: EdgeInsetsDirectional.only(
+                      start: leftPadding,
                       bottom: 16,
                     ),
                     title: Text(

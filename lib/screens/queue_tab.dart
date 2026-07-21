@@ -2979,6 +2979,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
                   expandedHeight: 120 + topPadding,
+                  primary: false,
                   collapsedHeight: kToolbarHeight,
                   floating: false,
                   pinned: true,
@@ -2996,10 +2997,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
 
                       return FlexibleSpaceBar(
                         expandedTitleScale: 1.0,
-                        titlePadding: const EdgeInsets.only(
-                          left: 24,
-                          bottom: 16,
-                        ),
+                        titlePadding: const EdgeInsetsDirectional.only(start: 24, bottom: 16),
                         title: Text(
                           context.l10n.navLibrary,
                           style: TextStyle(
@@ -3776,10 +3774,13 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                color: colorScheme.onSurfaceVariant,
-                size: 20,
+              Transform.flip(
+                flipX: Directionality.of(context) == TextDirection.rtl,
+                child: Icon(
+                  Icons.chevron_right,
+                  color: colorScheme.onSurfaceVariant,
+                  size: 20,
+                ),
               ),
             ],
           ),
@@ -4076,7 +4077,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
                       onTap: () => _togglePlaylistSelection(playlist.id),
                       behavior: HitTestBehavior.opaque,
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsetsDirectional.only(start: 8),
                         child: AnimatedSelectionCheckbox(
                           visible: true,
                           selected: isSelected,
@@ -6388,7 +6389,7 @@ class _QueueTabState extends ConsumerState<QueueTab> {
           borderRadius: BorderRadius.circular(12),
         ),
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsetsDirectional.only(end: 20),
         child: Icon(Icons.delete_outline, color: colorScheme.onErrorContainer),
       ),
       child: DownloadSuccessOverlay(

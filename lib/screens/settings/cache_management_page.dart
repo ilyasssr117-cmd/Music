@@ -382,6 +382,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
         slivers: [
           SliverAppBar(
             expandedHeight: 120 + topPadding,
+            primary: false,
             collapsedHeight: kToolbarHeight,
             floating: false,
             pinned: true,
@@ -389,7 +390,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
             surfaceTintColor: Colors.transparent,
             leading: IconButton(
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              icon: const Icon(Icons.arrow_back),
+              icon: const BackButtonIcon(),
               onPressed: () => Navigator.pop(context),
             ),
             actions: [
@@ -411,7 +412,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
 
                 return FlexibleSpaceBar(
                   expandedTitleScale: 1.0,
-                  titlePadding: EdgeInsets.only(left: leftPadding, bottom: 16),
+                  titlePadding: EdgeInsetsDirectional.only(start: leftPadding, bottom: 16),
                   title: Text(
                     context.l10n.cacheTitle,
                     style: TextStyle(
